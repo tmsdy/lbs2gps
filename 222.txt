@@ -1,0 +1,142 @@
+public class CellServiceEntity
+{
+    // Methods
+    public CellServiceEntity();
+
+    // Properties
+    public string address { get; set; }
+    public string cell { get; set; }
+    public int distance { get; set; }
+    public string lac { get; set; }
+    public string lat { get; set; }
+    public string lng { get; set; }
+    public int mcc { get; set; }
+    public int mnc { get; set; }
+}
+public class Coords
+{
+    // Methods
+    public Coords();
+
+    // Properties
+    public decimal x { get; set; }
+    public decimal y { get; set; }
+}
+
+ 
+
+public class BaiduCoords
+{
+    // Methods
+    public BaiduCoords();
+
+    // Properties
+    public List<CellServiceClass.Coords> result { get; set; }
+    public int status { get; set; }
+}
+
+ 
+
+ 
+ 
+public static string[] GetBaiduCoordEx(string lon, string lat, int from, int to)
+{
+    string requestUriString = string.Format("http://api.map.baidu.com/geoconv/v1/?coords={0},{1}&ak=A191de042a8a20dcf514a7c4967bf5cb&from={2}&to={3}", new object[] { lon, lat, from, to });
+    string[] strArray = new string[2];
+    try
+    {
+        HttpWebRequest request = (HttpWebRequest) WebRequest.Create(requestUriString);
+        request.Timeout = 0x5dc;
+        HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+        string str2 = string.Empty;
+        using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+        {
+            str2 = reader.ReadToEnd();
+            reader.Close();
+        }
+        BaiduCoords coords = JsonConvert.DeserializeObject<BaiduCoords>(str2);
+        if (coords.status == 0)
+        {
+            strArray[0] = coords.result[0].x.ToString();
+            strArray[1] = coords.result[0].y.ToString();
+        }
+    }
+    catch
+    {
+        strArray[0] = lon;
+        strArray[1] = lat;
+    }
+    return strArray;
+}
+
+ 
+
+ 
+  public static string[] GetBaiduCoordEx(string lon, string lat, int from, int to)
+{
+    string requestUriString = string.Format("http://api.map.baidu.com/geoconv/v1/?coords={0},{1}&ak=A191de042a8a20dcf514a7c4967bf5cb&from={2}&to={3}", new object[] { lon, lat, from, to });
+    string[] strArray = new string[2];
+    try
+    {
+        HttpWebRequest request = (HttpWebRequest) WebRequest.Create(requestUriString);
+        request.Timeout = 0x5dc;
+        HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+        string str2 = string.Empty;
+        using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+        {
+            str2 = reader.ReadToEnd();
+            reader.Close();
+        }
+        BaiduCoords coords = JsonConvert.DeserializeObject<BaiduCoords>(str2);
+        if (coords.status == 0)
+        {
+            strArray[0] = coords.result[0].x.ToString();
+            strArray[1] = coords.result[0].y.ToString();
+        }
+    }
+    catch
+    {
+        strArray[0] = lon;
+        strArray[1] = lat;
+    }
+    return strArray;
+}
+
+ 
+
+ 
+public CellServiceEntity getAddressByOther1(int lac, int cid)
+{
+    CellServiceEntity entity = new CellServiceEntity();
+
+ 
+        if (str2.Contains("cidMap"))
+        {
+            entity.cell = cid.ToString();
+            entity.lac = lac.ToString();
+            str2 = str2.Substring(7, str2.Length - 9);
+            string[] strArray = GetBaiduCoordEx(str2.Split(new char[] { ',' })[1], str2.Split(new char[] { ',' })[0], 3, 5);
+            string[] strArray2 = GetBaiduCoordEx(strArray[0], strArray[1], 1, 5);
+            double num = (Checkout.GetDouble(strArray[0]) * 2.0) - Checkout.GetDouble(strArray2[0]);
+            entity.lng = num.ToString();
+            entity.lat = ((Checkout.GetDouble(strArray[1]) * 2.0) - Checkout.GetDouble(strArray2[1])).ToString();
+            entity.address = str2.Split(new char[] { '>' })[1];
+        }
+}
+
+
+public CellServiceEntity getAddressByOther2(int lac, int cid)
+{
+    CellServiceEntity entity = new CellServiceEntity();
+
+ 
+        if (str2.Length > 0)
+        {
+            entity.cell = cid.ToString();
+            entity.lac = lac.ToString();
+            entity.lng = str2.Split(new char[] { ',' })[1];
+            entity.lat = str2.Split(new char[] { ',' })[0];
+            entity.address = str2.Split(new char[] { ',' })[4];
+        }
+}
+
